@@ -250,7 +250,9 @@ def purchase_book(book_id, quantity):
     try:
         c = con.cursor()
 
-        query = "select stock from books where book_id = %s"
+        con.start_transaction()
+
+        query = "select stock from books where book_id = %s for update"
         data = (book_id,)
         c.execute(query, data)
         record = c.fetchone()
@@ -270,6 +272,7 @@ def purchase_book(book_id, quantity):
                 print("Insufficient stock")
 
         else:
+            con.rollback()
             print("Book not found")
 
     except:
@@ -303,7 +306,7 @@ while (1):
         author = input("author name ")
         category = input("category")
         price = float(input("price "))
-        stock = int(input(" "))
+        stock = int(input("Enter stock quantity: "))
 
         create_book(book_id, title, author, category, price, stock)
 
@@ -343,3 +346,4 @@ while (1):
 
     else:
         print("no choise available")
+
